@@ -1,0 +1,75 @@
+CREATE DATABASE company_db1;
+USE company_db1;
+
+CREATE TABLE department(
+    dept_id INT PRIMARY KEY,
+    dept_name VARCHAR(50),
+    location VARCHAR(50)
+);
+
+INSERT INTO department VALUES
+(101,'IT','Pune'),
+(102,'HR','Mumbai'),
+(103,'Finance','Delhi'),
+(104,'Sales','Bangalore'),
+(105,'Marketing','Hyderabad');
+
+select * from department;
+
+CREATE TABLE employee(
+    emp_id INT PRIMARY KEY,
+    emp_name VARCHAR(50),
+    salary DECIMAL(10,2),
+    designation VARCHAR(50),
+    hire_date DATE,
+    dept_id INT,
+    FOREIGN KEY(dept_id) REFERENCES department(dept_id)
+);
+
+INSERT INTO employee VALUES
+(1,'Amit',65000,'Java Developer','2026-05-12',101),
+(2,'Priya',70000,'Senior Developer','2025-08-20',101),
+(3,'Rahul',45000,'HR Executive','2026-02-10',102),
+(4,'Sneha',50000,'HR Manager','2024-11-15',102),
+(5,'Karan',90000,'Finance Manager','2023-06-11',103),
+(6,'Neha',75000,'Accountant','2025-12-01',103),
+(7,'Rohit',60000,'Sales Executive','2026-04-18',104),
+(8,'Pooja',85000,'Sales Manager','2025-01-30',104),
+(9,'Ankit',55000,'Marketing Executive','2026-03-22',105),
+(10,'Lina',95000,'Java Full Stack Developer','2026-06-01',101),
+(11,'Vikas',65000,'Java Developer','2024-12-05',101),
+(12,'Meena',70000,'Software Engineer','2025-09-18',101),
+(13,'Ajay',50000,'HR Executive','2026-05-25',102),
+(14,'Komal',90000,'Finance Analyst','2025-10-10',103),
+(15,'Sagar',45000,'Sales Executive','2026-01-20',104);
+
+select * from employee;
+
+SELECT MAX(salary) FROM employee;
+
+SELECT * FROM employee ORDER BY salary DESC LIMIT 5;
+
+SELECT dept_id,COUNT(*) AS total_employee FROM employee GROUP BY dept_id;
+
+SELECT MAX(salary) FROM employee WHERE salary < (SELECT MAX(salary) FROM employee);
+
+SELECT * FROM employee e WHERE salary > ( SELECT AVG(salary) FROM employee WHERE dept_id= e.dept_id );
+
+SELECT e.emp_name, d.dept_name FROM employee e INNER JOIN department d ON e.dept_id=d.dept_id;
+
+SELECT e.emp_name, d.dept_name FROM employee e LEFT JOIN department d ON e.dept_id=d.dept_id;
+
+SELECT dept_id, COUNT(*) AS total FROM employee GROUP BY dept_id HAVING COUNT(*)>2;
+
+SELECT * FROM employee WHERE hire_date>=DATE_SUB(CURDATE(),INTERVAL 6 MONTH);
+
+SELECT salary, COUNT(*) FROM employee GROUP BY salary HAVING COUNT(*)>1;
+
+CREATE TABLE employee_duplicate AS
+SELECT * FROM employee;
+DELETE e1
+FROM employee_duplicate e1
+JOIN employee_duplicate e2
+ON e1.emp_name=e2.emp_name
+AND e1.salary=e2.salary
+AND e1.emp_id>e2.emp_id;
