@@ -73,3 +73,134 @@ JOIN employee_duplicate e2
 ON e1.emp_name=e2.emp_name
 AND e1.salary=e2.salary
 AND e1.emp_id>e2.emp_id;
+
+SELECT
+emp_name,
+salary,
+RANK() OVER(ORDER BY salary DESC) AS salary_rank
+FROM employee;
+
+SELECT
+emp_name,
+salary,
+SUM(salary) OVER(ORDER BY emp_id) AS running_total
+FROM employee;
+
+SELECT
+emp_name,
+dept_id,
+salary,
+AVG(salary) OVER(PARTITION BY dept_id) AS dept_avg_salary
+FROM employee;
+
+CREATE VIEW employee_details AS
+
+SELECT
+e.emp_id,
+e.emp_name,
+e.salary,
+e.designation,
+d.dept_name,
+d.location
+
+FROM employee e
+JOIN department d
+
+ON e.dept_id=d.dept_id;
+SELECT * FROM employee_details;
+
+CREATE TABLE employee_log(
+
+log_id INT PRIMARY KEY AUTO_INCREMENT,
+
+emp_id INT,
+
+action_type VARCHAR(50),
+
+action_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+DELIMITER $$
+
+CREATE TRIGGER trg_employee_insert
+
+AFTER INSERT
+
+ON employee
+
+FOR EACH ROW
+
+BEGIN
+
+INSERT INTO employee_log(emp_id,action_type)
+
+VALUES(NEW.emp_id,'Employee Inserted');
+
+END $$
+
+DELIMITER ;
+INSERT INTO employee
+VALUES
+(21,'Sahil',65000,'Developer','2026-06-25',101);
+SELECT * FROM employee_log;
+
+SELECT
+
+emp_name,
+
+salary,
+
+CASE
+
+WHEN salary>=90000 THEN 'A'
+
+WHEN salary>=70000 THEN 'B'
+
+WHEN salary>=50000 THEN 'C'
+
+ELSE 'D'
+
+END AS Grade
+
+FROM employee;
+
+SELECT
+
+emp_name,
+
+salary,
+
+CASE
+
+WHEN salary>70000
+
+THEN 'High Salary'
+
+ELSE 'Normal Salary'
+
+END AS Status
+
+FROM employee;
+
+SELECT
+
+emp_name,
+
+CASE
+
+WHEN dept_id=101 THEN 'IT'
+
+WHEN dept_id=102 THEN 'HR'
+
+WHEN dept_id=103 THEN 'Finance'
+
+WHEN dept_id=104 THEN 'Sales'
+
+WHEN dept_id=105 THEN 'Marketing'
+
+WHEN dept_id=106 THEN 'Testing'
+
+ELSE 'Support'
+
+END AS Department
+
+FROM employee;
